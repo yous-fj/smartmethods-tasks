@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><embeddedOutputs><metaData><evaluationState>manual</evaluationState><layoutState>code</layoutState><outputStatus>error</outputStatus><splitterState><proportion>0.4</proportion></splitterState></metaData><outputArray type="array"><element><type>error</type><outputData><text>Error using &lt;a href="matlab:matlab.internal.language.introspective.errorDocCallback('webcam/set.Resolution', 'C:\ProgramData\MATLAB\SupportPackages\R2020a\toolbox\matlab\webcam\supportpackages\@webcam\webcam.m', 152)" style="font-weight:bold"&gt;webcam/set.Resolution&lt;/a&gt; (&lt;a href="matlab: opentoline('C:\ProgramData\MATLAB\SupportPackages\R2020a\toolbox\matlab\webcam\supportpackages\@webcam\webcam.m',152,0)"&gt;line 152&lt;/a&gt;)
+Expected Resolution to match one of these values:
+
+'640x480', '320x240', '160x120', '352x288', '176x144', '1280x800', '1280x1024'
+
+The input, '430x280', did not match any of the valid values.</text><errorType>runtime</errorType></outputData><lineNumbers type="array"><element>3</element></lineNumbers></element></outputArray><regionArray type="array"><element><code><sectionBreak>true</sectionBreak><endOfSection>false</endOfSection><regionString>clear all</regionString><regionNumber>0</regionNumber></code><startLine>0</startLine><endLine>0</endLine><outputIndexes type="array"/></element><element><code><sectionBreak>false</sectionBreak><endOfSection>false</endOfSection><regionString>cam = webcam();</regionString><regionNumber>1</regionNumber></code><startLine>1</startLine><endLine>1</endLine><outputIndexes type="array"/></element><element><code><sectionBreak>false</sectionBreak><endOfSection>false</endOfSection><regionString>cam.Resolution = '430x280';</regionString><regionNumber>2</regionNumber></code><startLine>2</startLine><endLine>2</endLine><outputIndexes type="array"><element>0</element></outputIndexes></element><element><code><sectionBreak>false</sectionBreak><endOfSection>false</endOfSection><regionString>video_frame = snapshot(cam);</regionString><regionNumber>3</regionNumber></code><startLine>3</startLine><endLine>3</endLine><outputIndexes type="array"/></element><element><code><sectionBreak>false</sectionBreak><endOfSection>false</endOfSection><regionString> video_player =vision.VideoPlayer('position',[100 100 640 480]);</regionString><regionNumber>4</regionNumber></code><startLine>4</startLine><endLine>4</endLine><outputIndexes type="array"/></element><element><code><sectionBreak>false</sectionBreak><endOfSection>false</endOfSection><regionString> face_detector = vision.CascadeObjectDetector();</regionString><regionNumber>5</regionNumber></code><startLine>5</startLine><endLine>5</endLine><outputIndexes type="array"/></element><element><code><sectionBreak>false</sectionBreak><endOfSection>false</endOfSection><regionString> point_Tracker = vision.pointTracker('MaxBidirectionalError',2);</regionString><regionNumber>6</regionNumber></code><startLine>6</startLine><endLine>6</endLine><outputIndexes type="array"/></element><element><code><sectionBreak>false</sectionBreak><endOfSection>false</endOfSection><regionString> run_loop = true;</regionString><regionNumber>7</regionNumber></code><startLine>7</startLine><endLine>7</endLine><outputIndexes type="array"/></element><element><code><sectionBreak>false</sectionBreak><endOfSection>false</endOfSection><regionString> number_of_points=0;</regionString><regionNumber>8</regionNumber></code><startLine>8</startLine><endLine>8</endLine><outputIndexes type="array"/></element><element><code><sectionBreak>false</sectionBreak><endOfSection>false</endOfSection><regionString> frame_count=0;</regionString><regionNumber>9</regionNumber></code><startLine>9</startLine><endLine>9</endLine><outputIndexes type="array"/></element><element><code><sectionBreak>false</sectionBreak><endOfSection>false</endOfSection><regionString>while run_loop &amp;&amp; frame_count&lt;400
+    video_frame = snapshot(cam);
+    gray_frame =rgb2gray(video_frame);
+    frame_count = frame_count+1;
+    if number_of_points&lt;10
+        face_rectangular =face_detector.step(gray_frame);
+        if isempty(face_rectangular)
+            points = detectMinEigenFeatures(gray_frame,'ROI', face_rectangular(1,:));
+            xy_Points = points.Location;
+            number_of_points =size(xy_Points, 1);
+            release(point_Tracker);
+            initialize(point_Tracker,xy_Points,gray_frame);
+            previous_points= xy_Points;
+            rectangle = bbox2points(face_rectangular(1, :));
+            face_Polygon = reshape(rectangle',1,[]);
+            video_frame = insertshape(video_frame, 'polygon', face_Polygon, 'LineWidth', 3);
+            video_frame = insertMarker(video_frame, xy_Points,'+', 'color','white');
+            
+        end
+    else
+        [xy_Points, isFound]= step(point_Tracker, gray_frame);
+        new_points =xy_Points(isFound, :);
+        old_points =previous_points(isFound, :);
+        number_of_points= size(new_points, 1);
+        if number_of_points&gt;=10
+            [xform,old_points,new_points]=estimateGeometricTransform(old_points, new_points,'similarity','MaxDistance', 4);
+            rectangle =transformPointsForward(xform, rectangle);
+            face_Polygon = reshape(rectangle',1,[]);
+            video_frame= insertshape(video_frame, 'polygon',face_Polygon, 3);
+            video_frame =insertMarker(video_frame,new_points,'+','color','white');
+            previous_points =new_points;
+            setPoints(point_Tracker,previous_points);
+            
+        end
+        
+        
+        
+        
+        
+        
+        
+    end
+    step(video_player,video_frame);
+    run_loop = isOpen(video_player);
+end</regionString><regionNumber>10</regionNumber></code><startLine>10</startLine><endLine>54</endLine><outputIndexes type="array"/></element><element><code><sectionBreak>false</sectionBreak><endOfSection>false</endOfSection><regionString>clear cam;</regionString><regionNumber>11</regionNumber></code><startLine>55</startLine><endLine>55</endLine><outputIndexes type="array"/></element><element><code><sectionBreak>false</sectionBreak><endOfSection>false</endOfSection><regionString>release(video_player);</regionString><regionNumber>12</regionNumber></code><startLine>56</startLine><endLine>56</endLine><outputIndexes type="array"/></element><element><code><sectionBreak>false</sectionBreak><endOfSection>false</endOfSection><regionString>release(point_Tracker);</regionString><regionNumber>13</regionNumber></code><startLine>57</startLine><endLine>57</endLine><outputIndexes type="array"/></element><element><code><sectionBreak>false</sectionBreak><endOfSection>true</endOfSection><regionString>release(face_detector);</regionString><regionNumber>14</regionNumber></code><startLine>58</startLine><endLine>58</endLine><outputIndexes type="array"/></element></regionArray></embeddedOutputs>
